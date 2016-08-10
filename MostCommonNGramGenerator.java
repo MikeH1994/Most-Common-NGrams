@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MostCommonNGramGenerator extends Utils{
-	private String outdir = "<Enter outdir here>";
+	//TODO serialize hash map after running
+	private String outdir;
 	private HashMap<String,Integer> nGramsMap;
 	private int minNGram = 2;
 	private int maxNGram = 4;
@@ -12,7 +13,9 @@ public class MostCommonNGramGenerator extends Utils{
 		nGramsMap = new HashMap<String,Integer>();
 	}
 	public static void main(String[] args){
-		String root = "<Enter root dir here>"
+		String root = args[0];
+		outdir = args[1];
+		
 		FilenameFilter filter = new FilenameFilter(){
 			@Override
 			public boolean accept(File arg0, String arg1) {

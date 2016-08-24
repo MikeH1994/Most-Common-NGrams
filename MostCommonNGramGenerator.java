@@ -1,25 +1,30 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class MostCommonNGramGenerator extends Utils{
-	//TODO serialize hash map after running
-	private String outdir;
+	private String outdir = "C:\\Users\\Michael\\Desktop\\NGram Output\\";//"C:\\Users\\Michael\\Desktop\\Mevitae\\Old\\Corpus\\Physics\\";//TODO
+	private String lemmaPath = "C:\\Users\\Michael\\workspace\\MostCommonNGrams\\src\\lemmatization-en.txt";
 	private HashMap<String,Integer> nGramsMap;
-	private int minNGram = 2;
-	private int maxNGram = 4;
+	private HashMap<String,String> lemmaMap;
+	private int minNGram = 1;
+	private int maxNGram = 3;
 	public MostCommonNGramGenerator(){
 		nGramsMap = new HashMap<String,Integer>();
+		lemmaMap = new HashMap<String,String>();
+		loadLemmaMap();
 	}
 	public static void main(String[] args){
-		String root = args[0];
-		outdir = args[1];
-		
+		String root = "C:\\Users\\Michael\\Desktop\\Deleted\\Theoretical\\";
 		FilenameFilter filter = new FilenameFilter(){
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if (arg0.getName().endsWith(".txt")){
+				if (arg0.getName().endsWith(".txt ")){
 					return true;
 				}
 				else{
@@ -28,7 +33,7 @@ public class MostCommonNGramGenerator extends Utils{
 			}
 		};	
 		File[] sourceFiles = new File(root).listFiles();
-		String[] sourceFilepaths = new String[sourceFiles.length];
+		String[] sourceFilepaths = new String[sourceFiles.length];//sourceFiles.length
 		for (int i = 0; i<sourceFilepaths.length; i++){
 			sourceFilepaths[i] = sourceFiles[i].getAbsolutePath();
 			
@@ -51,7 +56,37 @@ public class MostCommonNGramGenerator extends Utils{
 		System.out.println(sourceFilepaths.length + " files done");
 		
 	}
+	void loadLemmaMap(){
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(lemmaPath));
+			String line = br.readLine();
+			String l,r;
+			Scanner s;
+			while (line!=null){
+				s = new Scanner(line).useDelimiter("\\t");
+				l = s.next();
+				r = s.next();
+				lemmaMap.put(l,r);
+				s.close();
+				line = br.readLine();
+			}
+			br.close();
+		}catch(IOException e){
+			System.out.println(e.toString());
+		}
+	}
+	String lemmatise(String str){
+		if (lemmaMap.containsKey(str)){
+			return lemmaMap.get(str);
+		}
+		else{
+			return str;
+		}
+	}
 	void parseTokens(String[] tokens){
+		for(int i =0; i<tokens.length; i++){
+			tokens[i] = lemmatise(tokens[i]);
+		}
 		String substring;
 		for (int nGramLength = minNGram; nGramLength<=maxNGram; nGramLength++){
 			for (int i = 0; i<tokens.length - nGramLength; i++){
@@ -94,7 +129,7 @@ public class MostCommonNGramGenerator extends Utils{
 		}
 	}
 	void quickSort(ArrayList<Pair<String,Integer>> array){
-		//TODO
+		
 	}
 	void swap(ArrayList<Pair<String,Integer>> array, int index1, int index2){
 		Pair<String,Integer> temp = array.get(index1);
